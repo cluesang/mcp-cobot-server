@@ -115,14 +115,27 @@ def interpretive_dance_routine(description: str) -> str:
         color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         dance_moves.append((angles, color))
 
-    speed: int = 60
-    for angles, color in dance_moves:
-        print(f"Moving to angles: {angles} with color: {color}")
+    # Define speed pattern: fast, slow, fast, end slow
+    num_moves = len(dance_moves)
+    speeds = []
+    for i in range(num_moves):
+        if i == 0:
+            speeds.append(random.randint(90, 100))  # Start fast
+        elif i < num_moves // 2:
+            speeds.append(random.randint(25, 35))   # Slow
+        elif i < num_moves - 1:
+            speeds.append(random.randint(90, 100))  # Fast again
+        else:
+            speeds.append(random.randint(25, 35))   # End slow
+
+    for (angles, color), speed in zip(dance_moves, speeds):
+        print(f"Moving to angles: {angles} with color: {color} at speed: {speed}")
         move_angles(angles, speed)
         change_color(*color)
         time.sleep(1.5)
     # End with a bow
-    move_angles([0, -90, 90, 0, 0, 0], speed)
+    final_speed = speeds[-1]
+    move_angles([0, -90, 90, 0, 0, 0], final_speed)
     change_color(128, 0, 128)  # Purple
     time.sleep(2)
     print("Dance routine complete!")
