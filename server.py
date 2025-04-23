@@ -86,6 +86,47 @@ def get_greeting(name: str) -> str:
             My version information is: {version}, {basic_version}, \
             rebooted {reboot_count} times!"
 
+@mcp.tool()
+def interpretive_dance_routine(description: str) -> str:
+    """
+    Perform an interpretive dance routine using creative joint angles and LED color changes.
+    The routine is determined by the input description.
+    """
+    import time
+    import hashlib
+    import random
+
+    # Use the description to seed the random generator deterministically
+    seed = int(hashlib.sha256(description.encode('utf-8')).hexdigest(), 16) % (2**32)
+    random.seed(seed)
+
+    # Define dance moves as (angles, color) tuples
+    dance_moves: list[tuple[list[int], tuple[int, int, int]]] = [
+        ([0, 0, 0, 0, 0, 0], (255, 0, 0)),        # Center pose, Red
+        ([90, -45, 60, -30, 45, 90], (0, 255, 0)), # Open arms, Green
+        ([-90, 45, -60, 30, -45, -90], (0, 0, 255)), # Closed arms, Blue
+        ([168, -135, 150, -145, 165, 180], (255, 255, 0)), # Max reach, Yellow
+        ([-168, 135, -150, 145, -165, -180], (0, 255, 255)), # Min reach, Cyan
+        ([0, 90, -90, 90, -90, 0], (255, 0, 255)), # Twisted pose, Magenta
+    ]
+    # Add a few random (but deterministic) freestyle moves
+    for _ in range(3):
+        angles = [random.randint(-168,168), random.randint(-135,135), random.randint(-150,150), random.randint(-145,145), random.randint(-165,165), random.randint(-180,180)]
+        color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        dance_moves.append((angles, color))
+
+    speed: int = 60
+    for angles, color in dance_moves:
+        print(f"Moving to angles: {angles} with color: {color}")
+        move_angles(angles, speed)
+        change_color(*color)
+        time.sleep(1.5)
+    # End with a bow
+    move_angles([0, -90, 90, 0, 0, 0], speed)
+    change_color(128, 0, 128)  # Purple
+    time.sleep(2)
+    print("Dance routine complete!")
+    return "Dance routine complete!"
 
 if __name__ == "__main__":
     mc.send_angles(home_angles,50)
