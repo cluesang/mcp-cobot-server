@@ -8,14 +8,16 @@ from typing import Callable, Any, Deque, Tuple
 LOG_FILE = 'mcp_work_queue_client.log'
 
 # Configure logging to a file
+# TODO: This doesn't seem to populate with all the log info we're looking for.
 logging.basicConfig(
-    level=logging.INFO,  # Adjust as needed (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    level=logging.DEBUG,  # Adjust as needed (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     format='%(asctime)s - %(levelname)s - %(module)s - %(message)s',
     filename=LOG_FILE,
     filemode='w'  # 'w' overwrites the file on each run, use 'a' to append
 )
 
 logger = logging.getLogger(__name__)
+
 
 class CommandQueue:
     def __init__(self) -> None:
@@ -30,8 +32,13 @@ class CommandQueue:
 
     def add_command(self, command: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
         """Adds a command and its parameters to the queue."""
+        logger.info(f"Adding command: {command.__name__} with args: {args}, kwargs: {kwargs}")
+        if not callable(command):
+            logger.error(f"Tried to add a non-callable command: {command!r} (type: {type(command)})")
+            return
+        command_name = getattr(command, "__name__", repr(command))
         self._queue.append((command, args, kwargs))
-        logger.debug(f"Command added: {command.__name__} with args: {args}, kwargs: {kwargs}")
+        logger.debug(f"Command added: {command_name} with args: {args}, kwargs: {kwargs}")
 
     def pause(self) -> None:
         """Pauses the processing of commands."""
@@ -59,10 +66,19 @@ class CommandQueue:
         self._processing_thread.join()
         logger.info("Command queue processing stopped.")
 
+    def get_state(self) -> dict:
+        """Returns the current state of the command queue."""
+        return {
+            'running': self._running.is_set(),
+            'paused': self._paused.is_set(),
+            'queue_length': len(self._queue)
+        }
+
     def _process_commands(self) -> None:
         """Processes commands from the queue in a loop."""
         while self._running.is_set():
-            self._paused.wait()  # Block until resumed
+            if self._paused.is_set():
+                self._paused.wait()  # Block until unpaused
             with self._queue_lock:
                 if self._queue:
                     command, args, kwargs = self._queue.popleft()
@@ -71,7 +87,7 @@ class CommandQueue:
                         logger.info(f"Executing: {command.__name__}(*{args}, **{kwargs})")
                         command(*args, **kwargs)
                     except Exception as e:
-                        logger.error(f"Error executing command {command.__name__}: {e}", exc_info=True)
+                        logger.error(f"Error executing command {command.__name__}(*{args}, **{kwargs}): {e}", exc_info=True)
                 else:
                     logger.debug("Command queue is empty.")
             time.sleep(0.1) # Don't hog the CPU
