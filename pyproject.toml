@@ -6,5 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "mcp[cli]>=1.6.0",
+    "mcpo>=0.0.13",
+    "opencv-python>=4.11.0.86",
     "pymycobot>=3.9.7",
 ]

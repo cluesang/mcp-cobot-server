@@ -6,7 +6,8 @@ from command_queue import CommandQueue, task_one, task_two
 
 # Create a named server
 mcp = FastMCP("Cobot")
-mc = MyCobot280("/dev/tty.usbserial-588D0016561", 115200)
+# mc = MyCobot280("/dev/tty.usbserial-588D0016561", 115200)
+mc = MyCobot280("/dev/ttyACM0", 115200)
 home_angles = [0,0,0,0,0,0]
 
 work_queue = CommandQueue()

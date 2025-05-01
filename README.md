@@ -35,11 +35,16 @@ Based on the model context protocol python-sdk: https://github.com/modelcontextp
 
 Start the server:
 ```bash
+# launch a standalone MCP server with:
+uvx mcpo --port 8000 -- uv run --with mcp[cli] --with pymycobot mcp run ./server.py
+
+# Install the mcp profile with claude
 mcp install server.py
 ```
 
 For development:
 ```bash
+# debug the mcp interface
 mcp dev server.py
 ```
 
