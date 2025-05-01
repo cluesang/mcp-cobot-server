@@ -48,6 +48,19 @@ For development:
 mcp dev server.py
 ```
 
+## Available Functions
+
+The following functions are exposed to `mcp.tool` in `server.py`:
+
+1. **`get_angles`**: Retrieves the current angles of all servos.
+2. **`move_angle`**: Moves a specific joint (servo) to a target angle at a specified speed.
+3. **`move_angles`**: Moves all joints to specified angles at a given speed.
+4. **`go_home`**: Moves all joints to a predefined "home" position.
+5. **`set_home`**: Sets the current joint angles as the new "home" position.
+6. **`change_color`**: Changes the LED matrix color of the robot.
+7. **`relax`**: Releases all servos, allowing the robot arms to relax.
+8. **`interpretive_dance_routine`**: Executes a creative dance routine based on a description, involving joint movements and LED color changes.
+
 ## MyCobot M5 280 
 
 The myCobot SDK I'm using is documented here: https://github.com/elephantrobotics/pymycobot/blob/main/docs/MyCobot_280_en.md
